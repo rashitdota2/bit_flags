@@ -1,7 +1,13 @@
 package bit_flags
 
-func SetFlags(bitFlags map[uint8]uint64, flags ...uint8) map[uint8]uint64 {
-	bitFlags = validateMap(bitFlags)
+type BitFlags map[uint8]uint64
+
+func NewBitFlags() BitFlags {
+	return make(BitFlags)
+}
+
+func SetFlags(bitFlags BitFlags, flags ...uint8) map[uint8]uint64 {
+	bitFlags = validateBitFlags(bitFlags)
 
 	var flvl uint8
 	for _, flag := range flags {
@@ -18,8 +24,8 @@ func SetFlags(bitFlags map[uint8]uint64, flags ...uint8) map[uint8]uint64 {
 	return bitFlags
 }
 
-func RemoveFlags(bitFlags map[uint8]uint64, flags ...uint8) map[uint8]uint64 {
-	bitFlags = validateMap(bitFlags)
+func RemoveFlags(bitFlags BitFlags, flags ...uint8) map[uint8]uint64 {
+	bitFlags = validateBitFlags(bitFlags)
 
 	var flvl uint8
 	for _, flag := range flags {
@@ -35,7 +41,7 @@ func RemoveFlags(bitFlags map[uint8]uint64, flags ...uint8) map[uint8]uint64 {
 	return bitFlags
 }
 
-func HasFlag(bitFlags map[uint8]uint64, flag uint8) bool {
+func HasFlag(bitFlags BitFlags, flag uint8) bool {
 
 	if bit, ok := bitFlags[fLvl(flag)]; ok {
 		return bit&(1<<fbp(flag)) != 0
@@ -60,7 +66,7 @@ func fbp(f uint8) uint8 {
 	return f
 }
 
-func validateMap(m map[uint8]uint64) map[uint8]uint64 {
+func validateBitFlags(m BitFlags) map[uint8]uint64 {
 	if m == nil {
 		return make(map[uint8]uint64)
 	}

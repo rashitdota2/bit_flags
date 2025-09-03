@@ -5,25 +5,42 @@ import (
 	"testing"
 )
 
+const (
+	_ uint8 = iota
+	CreatePermission
+	RemovePermission
+	UpdatePermission
+)
+
 func TestHasFlag(t *testing.T) {
 	type args struct {
-		bitFlags map[uint8]uint64
+		bitFlags BitFlags
 		flag     uint8
 	}
+
 	tests := []struct {
 		name string
 		args args
 		want bool
 	}{
 		{
+			"HASN'T FLAG",
+			args{
+				bitFlags: NewBitFlags(),
+				flag:     RemovePermission,
+			},
+			false,
+		},
+		{
 			"HAS FLAG",
 			args{
-				bitFlags: map[uint8]uint64{1: 2, 2: 10},
-				flag:     64,
+				bitFlags: map[uint8]uint64{1: 2},
+				flag:     CreatePermission,
 			},
 			true,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := HasFlag(tt.args.bitFlags, tt.args.flag); got != tt.want {
@@ -35,7 +52,7 @@ func TestHasFlag(t *testing.T) {
 
 func TestRemoveFlags(t *testing.T) {
 	type args struct {
-		bitFlags map[uint8]uint64
+		bitFlags BitFlags
 		flags    []uint8
 	}
 	tests := []struct {
@@ -46,8 +63,8 @@ func TestRemoveFlags(t *testing.T) {
 		{
 			"REMOVE FLAGS",
 			args{
-				bitFlags: map[uint8]uint64{1: 8, 2: 2},
-				flags:    []uint8{64},
+				bitFlags: map[uint8]uint64{1: 14, 2: 2},
+				flags:    []uint8{CreatePermission, RemovePermission, 64},
 			},
 			map[uint8]uint64{1: 8, 2: 0},
 		},
@@ -63,7 +80,7 @@ func TestRemoveFlags(t *testing.T) {
 
 func TestSetFlags(t *testing.T) {
 	type args struct {
-		flagBits map[uint8]uint64
+		flagBits BitFlags
 		flags    []uint8
 	}
 	tests := []struct {
@@ -74,10 +91,10 @@ func TestSetFlags(t *testing.T) {
 		{
 			"SET FLAGS",
 			args{
-				flagBits: map[uint8]uint64{1: 8},
-				flags:    []uint8{63, 64},
+				flagBits: NewBitFlags(),
+				flags:    []uint8{CreatePermission, RemovePermission, UpdatePermission, 64},
 			},
-			map[uint8]uint64{1: 9223372036854775816, 2: 2},
+			map[uint8]uint64{1: 14, 2: 2},
 		},
 	}
 	for _, tt := range tests {
